@@ -256,38 +256,7 @@ class PaymentService
         if (!is_null($basket) && $basket instanceof Basket) {
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
-                // Minimum amount validation
-                $minimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
-                $minimumAmount = ((preg_match('/^[0-9]*$/', $minimumAmount) && $minimumAmount >= '1998')  ? $minimumAmount : '1998');
-                $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
-                // Check instalment cycles
-                $instalementCyclesCheck = false;
-                $instalementCycles = explode(',', $this->config->get('Novalnet.' . strtolower($paymentKey . '_cycles')));
-                if($minimumAmount >= 1998) {
-                    foreach($instalementCycles as $key => $value) {
-                        $cycleAmount = ($amount / $value);
-                        if($cycleAmount >= 999) {
-                            $instalementCyclesCheck = true;
-                        }
-                    }
-                }
-                // Address validation
-                $billingAddressId = $basket->customerInvoiceAddressId;
-                $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
-                $shippingAddress = $billingAddress;
-                if(!empty($basket->customerShippingAddressId)){
-                    $shippingAddress = $this->addressRepository->findAddressById($basket->customerShippingAddressId);
-                }
-                // Get country validation value
-                $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
-                $countryValidation = $this->europeanUnionCountryValidation($paymentKey, $billingShippingDetails['billing']['country_code']);
-                // Check the payment condition
-                if((((int) $amount >= (int) $minimumAmount && $instalementCyclesCheck && $countryValidation && $basket->currency == 'EUR' && ($billingShippingDetails['billing'] === $billingShippingDetails['shipping']) )
-                )) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return true;
             }
         }
         return false;

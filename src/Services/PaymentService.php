@@ -390,8 +390,8 @@ class PaymentService
 
         // Build Customer Data
         $paymentRequestParameters['customer'] = [
-            'first_name' => !empty($billingAddress->firstName) ?? $customerName['firstName'],
-            'last_name'  => !empty($billingAddress->lastName) ?? $customerName['lastName'],
+            'first_name' => !empty($billingAddress->firstName) ? $billingAddress->firstName : $customerName['firstName'],
+            'last_name'  => !empty($billingAddress->lastName) ? $billingAddress->lastName : $customerName['lastName'],
             'email'      => $billingAddress->email,
             'gender'     => (!empty($billingAddress->gender) ? ($billingAddress->gender == 'male' ? 'm' : ($billingAddress->gender == 'female' ? 'f' : 'u' ) ) : 'u' ),
             'customer_no'  => ($customerId) ?? 'guest',
@@ -431,7 +431,7 @@ class PaymentService
     
         $onHoldPaymentUrl = $this->getAdditionalPaymentData($paymentKey, $paymentRequestParameters);
         
-        $url = !empty($onHoldPaymentUrl) ?? NovalnetConstants::PAYMENT_URL;
+        $url = !empty($onHoldPaymentUrl) ? $onHoldPaymentUrl : NovalnetConstants::PAYMENT_URL;
         
         return [
             'data' => $paymentRequestParameters,
@@ -461,8 +461,8 @@ class PaymentService
             } else {
                 $lastname = $firstname;
             }
-        $firstName = empty ($firstname) ?? $firstname;
-        $lastName = empty ($lastname) ?? $lastname;
+        $firstName = empty ($firstname) ? $lastname : $firstname;
+        $lastName = empty ($lastname) ? $firstname : $lastname;
         return ['firstName' => $firstName, 'lastName' => $lastName];
     }
     
@@ -539,8 +539,8 @@ class PaymentService
             'client_key'    => trim($this->config->get('Novalnet.novalnet_client_key')),
             'inline_form'   => (int) ($this->config->get('Novalnet.novalnet_cc_display_inline_form') == 'true'),
             'test_mode'     => (int)($this->config->get('Novalnet.' . strtolower((string) $paymentKey) . '_test_mode') == 'true'),
-            'first_name'    => !empty($billingAddress->firstName) ?? $customerName['firstName'],
-            'last_name'     => !empty($billingAddress->lastName) ?? $customerName['lastName'],
+            'first_name'    => !empty($billingAddress->firstName) ? $billingAddress->firstName : $customerName['firstName'],
+            'last_name'     => !empty($billingAddress->lastName) ? $billingAddress->lastName : $customerName['lastName'],
             'email'         => $billingAddress->email,
             'street'        => $billingAddress->street,
             'house_no'      => $billingAddress->houseNumber,
@@ -710,8 +710,8 @@ class PaymentService
                 'customer_email'  => $nnPaymentData['customer']['email'],
                 'order_no'         => $nnPaymentData['transaction']['order_no'],
                 'additional_info'  => !empty($additionalInfo) ? json_encode($additionalInfo) : 0,
-                'save_card_token'   => !empty($nnPaymentData['transaction']['payment_data']['token']) ?? 0,
-                'mask_details'  => !empty($nnPaymentData['transaction']['payment_data']['token']) ?? 0,
+                'save_card_token'   => !empty($nnPaymentData['transaction']['payment_data']['token']) ? $nnPaymentData['transaction']['payment_data']['token'] : 0,
+                'mask_details'  => !empty($nnPaymentData['transaction']['payment_data']['token']) ? $this->saveAdditionalPaymentData ($nnPaymentData) : 0,
                 'instalment_info'  => !empty($instalmentInfo) ? json_encode($instalmentInfo) : 0,
                 ];
            
@@ -751,9 +751,9 @@ class PaymentService
             $additionalInfo['invoice_bic']     = $nnPaymentData['transaction']['bank_details']['bic'];
             $additionalInfo['invoice_account_holder'] = $nnPaymentData['transaction']['bank_details']['account_holder'];
             }
-            $additionalInfo['due_date']     = !empty($nnPaymentData['transaction']['due_date']) ?? 0;
-            $additionalInfo['invoice_type'] = !empty($nnPaymentData['transaction']['payment_type']) ?? 0;
-            $additionalInfo['invoice_ref']  = !empty($nnPaymentData['transaction']['invoice_ref']) ?? 0;
+            $additionalInfo['due_date']     = !empty($nnPaymentData['transaction']['due_date']) ? $nnPaymentData['transaction']['due_date'] : 0;
+            $additionalInfo['invoice_type'] = !empty($nnPaymentData['transaction']['payment_type']) ? $nnPaymentData['transaction']['payment_type'] : 0;
+            $additionalInfo['invoice_ref']  = !empty($nnPaymentData['transaction']['invoice_ref']) ? $nnPaymentData['transaction']['invoice_ref'] : 0;
         }
          return $additionalInfo;
     }

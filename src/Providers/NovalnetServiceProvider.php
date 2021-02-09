@@ -130,7 +130,7 @@ class NovalnetServiceProvider extends ServiceProvider
                          $this->getLogger(__METHOD__)->error('payment Key', $paymentKey);
                         $name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
                         $this->getLogger(__METHOD__)->error('payment name', $name);
-       $this->getLogger(__METHOD__)->error('payment dlf;sl', 'Novalnet.' . strtolower($paymentKey) . '_payment_name'));
+       $this->getLogger(__METHOD__)->error('payment dlf;sl', 'Novalnet.' . strtolower($paymentKey) . '_payment_name');
                         $paymentName = $name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey));
                         $basket = $basketRepository->load();
                         $oneClickShopping = (int) ($config->get('Novalnet.' . strtolower($paymentKey) . '_shopping_type'));

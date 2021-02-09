@@ -127,15 +127,11 @@ class NovalnetServiceProvider extends ServiceProvider
                     if($paymentHelper->getPaymentKeyByMop($event->getMop()))
                     {   
                         $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
-                         $this->getLogger(__METHOD__)->error('payment Key', $paymentKey);
                         $name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
-                        $this->getLogger(__METHOD__)->error('payment name dmjhjhjhjkhjkhj', $config->get('Novalnet.novalnet_cc_payment_active'));
-                         $this->getLogger(__METHOD__)->error('payment name1', $config->get('Novalnet.novalnet_sepa_payment_name'));
-                        $this->getLogger(__METHOD__)->error('payment name2', $config->get('novalnet_sepa_payment_name'));
-                        $this->getLogger(__METHOD__)->error('payment name', $name);
-       $this->getLogger(__METHOD__)->error('payment new check', 'Novalnet.' . strtolower($paymentKey) . '_payment_name');
                         $paymentName = $name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey));
                         $basket = $basketRepository->load();
+                          $this->getLogger(__METHOD__)->error('lower', strtolower($paymentKey));
+                        $this->getLogger(__METHOD__)->error('lang', $paymentHelper->getTranslatedText(strtolower($paymentKey));
                         $oneClickShopping = (int) ($config->get('Novalnet.' . strtolower($paymentKey) . '_shopping_type'));
                         $this->getLogger(__METHOD__)->error('one click shop', $oneClickShopping);
                         // Get the payment request data

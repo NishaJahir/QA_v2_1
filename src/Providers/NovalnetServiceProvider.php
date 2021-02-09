@@ -127,6 +127,7 @@ class NovalnetServiceProvider extends ServiceProvider
                     if($paymentHelper->getPaymentKeyByMop($event->getMop()))
                     {   
                         $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
+                         $this->getLogger(__METHOD__)->error('payment Key', $paymentKey);
                         $name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
                         $paymentName = $name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey));
                         $basket = $basketRepository->load();

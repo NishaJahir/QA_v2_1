@@ -115,7 +115,7 @@ class PaymentHelper
                 if($paymentMethod->paymentKey == $paymentKey)
                 {
                     $this->getLogger(__METHOD__)->error('getPaymentMethodByKey', $paymentMethod);
-                    return [$paymentMethod->id, $paymentMethod->paymentKey, $paymentMethod->paymentName];
+                    return [$paymentMethod->id, $paymentMethod->paymentKey, $paymentMethod->name];
                 }
             }
         }

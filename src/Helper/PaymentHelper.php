@@ -114,6 +114,7 @@ class PaymentHelper
             {
                 if($paymentMethod->paymentKey == $paymentKey)
                 {
+                    $this->getLogger(__METHOD__)->error('getPaymentMethodByKey', $paymentMethod);
                     return [$paymentMethod->id, $paymentMethod->paymentKey, $paymentMethod->paymentName];
                 }
             }
@@ -138,6 +139,7 @@ class PaymentHelper
             {
                 if($paymentMethod->id == $mop)
                 {
+                    $this->getLogger(__METHOD__)->error('getPaymentKeyByMop', $paymentMethod);
                     return $paymentMethod->paymentKey;
                 }
             }

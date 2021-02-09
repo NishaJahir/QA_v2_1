@@ -21,7 +21,7 @@ use Plenty\Plugin\Log\Loggable;
  * Class UpgradePaymentMethods
  * @package Novalnet\Migrations
  */
-class CreateAndUpdatePaymentMethodsNisha
+class CreateAndUpdatePaymentMethodsUpdated
 {
    use Loggable;
     /**
@@ -71,17 +71,18 @@ class CreateAndUpdatePaymentMethodsNisha
     private function createNovalnetPaymentMethodByPaymentKey($paymentKey, $paymentName)
     {
         $payment_data = $this->paymentHelper->getPaymentMethodByKey($paymentKey);
+     $this->getLogger(__METHOD__)->error('Payment data', $payment_data);
         if ($payment_data == 'no_paymentmethod_found')
         {
             $paymentMethodData = ['pluginKey'  => 'plenty_novalnet',
                                 'paymentKey' => $paymentKey,
-                                'paymentName' => $paymentName
+                                'name' => $paymentName
                                ];
             $this->paymentMethodRepository->createPaymentMethod($paymentMethodData);
         } elseif ($payment_data[1] == $paymentKey && !in_array ($payment_data[2], ['Novalnet Credit/Debit Cards', 'Novalnet Direct Debit SEPA', 'Novalnet Invoice', 'Novalnet PayPal']) ) {
             $paymentMethodData = ['pluginKey'  => 'Novalnet',
                                 'paymentKey' => $paymentKey,
-                                'paymentName' => $paymentName,
+                                'name' => $paymentName,
                                 'id' => $payment_data[0]
                                ];
             $this->getLogger(__METHOD__)->error('update payment Name', $paymentMethodData);

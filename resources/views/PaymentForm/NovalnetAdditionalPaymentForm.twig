@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="{{plugin_path('Novalnet')}}/css/novalnetUi.css">
+<script defer src="{{plugin_path('Novalnet')}}/js/novalnetBirthdayValidation.js"></script>
+<form method="post" id="novalnetForm" name="novalnetForm" action="{{nnPaymentProcessUrl}}">
+        <div class="modal-header">
+            <h4 class="modal-title">{{paymentName}} </h4>
+            <button type="button" aria-label="Close" data-dismiss="modal" class="close" onClick="window.location.reload();">
+                <span aria-hidden="true">x</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-title" style="color:#008EBF;">
+                <b>{{trans("Novalnet::PaymentMethod.note")}}</b> {{ trans("Novalnet::PaymentMethod.dobShowingreason") }}
+            </div><br>
+            <fieldset>
+                <input type="hidden" id="paymentKey" name="paymentKey" value="{{paymentMopKey}}" />
+                <input type="hidden" id="nn_dob_empty" name="nn_dob_empty" value="{{trans('Novalnet::PaymentMethod.dobEmpty')}}">
+                <input type="hidden" id="nn_dob_invalid" name="nn_dob_invalid" value="{{trans('Novalnet::PaymentMethod.dobInvalid')}}">
+                <input type="hidden" id="nn_dob_month" name="nn_dob_month" value="{{trans('Novalnet::PaymentMethod.monthOption')}}">
+                <input type="hidden" name="nn_invoice_valid_dob_msg" id="nn_invoice_valid_dob_msg" value="{{trans('Novalnet::PaymentMethod.doberror')}}">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <b><label for="nnBirthday">{{trans("Novalnet::PaymentMethod.birthdateLabel")}}<span class="text-danger">*</span></label></b>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="tel" name="nnBirthdayDate" id="nnBirthdayDate" maxlength="2" placeholder="{{trans("Novalnet::PaymentMethod.day")}}" class="form-control" autocomplete="off">
+                    </div>
+                    <div class="col-sm-4">
+                        <select id="nnBirthdayMonth" type="text" name="nnBirthdayMonth" placeholder="{{trans('Novalnet::PaymentMethod.month')}}" class="form-control">
+                            <option value="0">{{trans("Novalnet::PaymentMethod.monthOption")}}</option>
+                            {% for months in 1..12 %}
+                            <option value="{{months}}">{{ trans("Novalnet::PaymentMethod.month#{months}") }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-4 autocomplete">
+                        <input type="text" name="nnBirthdayYear" id="nnBirthdayYear" maxlength="4" placeholder="{{trans('Novalnet::PaymentMethod.year')}}" class="form-control" autocomplete="off">
+                    </div>
+                </div><br>
+                <b><label for="nnInstalment" style="color:#008ebd;">{{trans('Novalnet::PaymentMethod.instalmentPlanLabel')}}</label></b>
+                <div>{{trans("Novalnet::PaymentMethod.instalmentPlanDesc")}}</div>
+                <div class="row">
+                    <div class="col-sm-4 form-control" id="nnInstalmentAmount" name="nnInstalmentAmount">
+                        <b>{{trans("Novalnet::PaymentMethod.loanAmountText")}} {{instalmentNetAmount}} {{orderCurrency}}</b>
+                    </div>
+                    {% if instalmentCycles is not empty %}
+                    <div class="col-sm-5">
+                        <select id="nnInstalmentCycle" type="text" name="nnInstalmentCycle" placeholder="{{trans("Novalnet::PaymentMethod.instalment_plan_label")}}" class="form-control">
+                            <option value="0">{{trans("Novalnet::PaymentMethod.instalmentPlanLabel")}}</option>
+                            {% for instalmentCycle in instalmentCycles %}
+                            {% set instalmentCycleAmount = ( instalmentNetAmount / instalmentCycle) | round(2, 'floor') %}
+                            {% if instalmentCycleAmount > 19.98 %}
+                            <option value="{{instalmentCycle}}">{{ trans("Novalnet::PaymentMethod.instalmentCycle#{instalmentCycle}") }} / {{instalmentCycleAmount}} {{orderCurrency}} {{ trans("Novalnet::PaymentMethod.recurringPeriodEveryMonth") }}</option>
+                            {% endif %}
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    {% endif %}
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="novalnetFormBtn" onclick="">
+                <i class="fa fa-check" aria-hidden="true"></i>
+            {{ trans("Novalnet::PaymentMethod.submitButtonText") }}
+            </button>
+        </div>
+</form>
+

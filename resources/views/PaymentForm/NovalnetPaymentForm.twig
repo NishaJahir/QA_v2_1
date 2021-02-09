@@ -1,0 +1,145 @@
+<link rel="stylesheet" href="{{plugin_path('Novalnet')}}/css/novalnetUi.css">
+<script type="text/javascript" src="https://cdn.novalnet.de/js/v2/NovalnetUtility.js"></script>
+<script src="{{ plugin_path('Novalnet') }}/js/novalnetPaymentForm.js"></script>
+
+<form method="post" id="novalnetForm" name="novalnetForm" action="{{nnPaymentProcessUrl}}">
+    <input type="hidden" id="paymentKey" name="paymentKey" value="{{paymentMopKey}}" />
+    
+    <div class="modal-header">
+       <h4 class="modal-title">{{paymentName}}</h4>
+        <button type="button" aria-label="Close" data-dismiss="modal" class="close" onClick="window.location.reload();">
+            <span aria-hidden="true">x</span>
+        </button> 
+    </div>
+    
+    <div class="modal-body">
+        <fieldset>      
+                <input type="hidden" name="removalProcessUrl" id="removalProcessUrl" value="{{savedPaymentDetailsRemovalUrl}}">
+                 <input type="hidden" name="removedCardDetail" id="removedCardDetail" value="{{removedSavedPaymentDetail}}">
+                
+        {% if paymentMopKey == "NOVALNET_SEPA" %}
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                {% if savedPaymentDetails is not empty and oneClickShopping == 1 %}
+                {% for paymentDetail in savedPaymentDetails %}  
+                    <div class="row" id="remove_{{paymentDetail.saveOneTimeToken}}">
+                        <div class="col-xs-12 col-sm-12">
+                            <input type="radio" name="radioOption" id="maskingDetails">
+                            <input type="hidden" name="novalnetsepaSelectedToken" value="{{paymentDetail.saveOneTimeToken}}">
+                            <span>{{trans("Novalnet::PaymentMethod.sepaIbanLabel")}} {{paymentDetail.iban}}</span>
+                            <button type="button" class="btn btn-danger btnDelete"  onclick="removePaymentDetails('{{paymentDetail.saveOneTimeToken}}')" value="{{paymentDetail.saveOneTimeToken}}"><span class="fa fa-trash-o"></span></button>
+                        </div>
+                    </div>
+                {% endfor %}
+                 <input type="radio" name="radioOption" id="toggleForm"><strong>  {{trans("Novalnet::PaymentMethod.addNewAccountDetails")}}</strong><br><br>
+                 <input type="hidden" name="newForm" id="newForm">
+                {% endif %}
+
+                <div class="row" id="newCardDetails">
+                    <div class="col-xs-12 col-sm-12 nnSavePayment">
+                        {%if oneClickShopping == 1 %}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:10px;height:10px;"><path style="fill:#0080c9;" d="M400 480H48c-26.51 0-48-21.49-48-48V80c0-26.51 21.49-48 48-48h352c26.51 0 48 21.49 48 48v352c0 26.51-21.49 48-48 48zm-204.686-98.059l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.248-16.379-6.249-22.628 0L184 302.745l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.25 16.379 6.25 22.628.001z"></path></svg>
+                            <span class="saveCardText">{{trans("Novalnet::PaymentMethod.SaveAccountData")}}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-xs-12 col-sm-12">
+                        <div data-model="nn_sepa_iban" class="input-unit">
+                            <input type="text" name="nnSepaIban" autocomplete="off" id="nnSepaIban">
+                            <label for="sepaIban">{{trans("Novalnet::PaymentMethod.sepaIbanLabel")}}*</label>
+                        </div>
+                        <a href="#ibanDetails" data-toggle="collapse">{{trans("Novalnet::PaymentMethod.ibanMandate")}}</a>
+                        <div id="ibanDetails" class="collapse card-body" style="background:whitesmoke;padding:3%;">
+                        <div>{{trans("Novalnet::PaymentMethod.ibanDesc")}}</div><br>
+                        <div><b>{{trans("Novalnet::PaymentMethod.creditorIdentifier")}} </div></b><br>
+                        <div><b>{{trans("Novalnet::PaymentMethod.note")}}</b> {{trans("Novalnet::PaymentMethod.noteDesc")}}</div></div><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% elseif paymentMopKey == "NOVALNET_CC" %}
+            <input type="hidden" id="nnCcPanHash" name="nnCcPanHash" />
+            <input type="hidden" id="nnCcUniqueId" name="nnCcUniqueId" />
+            <input type="hidden" id="nnCc3dRedirect" name="nnCc3dRedirect" />
+            <input type="hidden" id="nnCcFormFields" name="nnCcFormFields" value="{{ccCustomFields|escape}}" />
+            <input type="hidden" id="nnCcFormDetails" name="nnCcFormDetails" value="{{ccFormDetails|escape}}" />
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    {% if savedPaymentDetails is not empty and oneClickShopping == 1 %}
+                    {% for paymentDetail in savedPaymentDetails %}  
+                        <div class="row" id="remove_{{paymentDetail.saveOneTimeToken}}">
+                            <div class="col-xs-12 col-sm-12">
+                                <input type="radio" name="radioOption" value="{{paymentDetail.saveOneTimeToken}}">
+                         <span>
+                        {% set cardType=paymentDetail.decodedMaskingDetails.card_type|lower %}
+                         <img src="{{ plugin_path('Novalnet') }}/images/novalnet_{{cardType}}.png" alt="{{paymentDetail.decodedMaskingDetails.card_type}}" title="{{paymentDetail.decodedMaskingDetails.card_type}}">
+                         {{trans("Novalnet::PaymentMethod.cardNumberEndingDetailsLabel")}} {{paymentDetail.decodedMaskingDetails.card_number}} ({{trans("Novalnet::PaymentMethod.cardExpiresText")}} {{paymentDetail.decodedMaskingDetails.card_validity}})
+                         </span>
+                                <button type="button" class="btn btn-danger btnDelete"  onclick="removePaymentDetails('{{paymentDetail.saveOneTimeToken}}')" value="{{paymentDetail.saveOneTimeToken}}"><span class="fa fa-trash-o"></span></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                     <input type="radio" name="radioOption" id="toggleForm"><strong> {{trans("Novalnet::PaymentMethod.addNewCardDetails")}}</strong><br><br>
+                     <input type="hidden" name="novalnetccSelectedToken" id="novalnetccSelectedToken">
+                     <input type="hidden" name="newForm" id="newForm">
+                    {% endif %}
+                    <div class="row" id="newCardDetails">
+                        <div class="col-xs-12 col-sm-12 nnSavePayment">
+                            {%if oneClickShopping == 1 %}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:10px;height:10px;"><path style="fill:#0080c9;" d="M400 480H48c-26.51 0-48-21.49-48-48V80c0-26.51 21.49-48 48-48h352c26.51 0 48 21.49 48 48v352c0 26.51-21.49 48-48 48zm-204.686-98.059l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.248-16.379-6.249-22.628 0L184 302.745l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.25 16.379 6.25 22.628.001z"></path></svg>
+                                <span class="saveCardText">{{trans("Novalnet::PaymentMethod.saveCardData")}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 form-horizontal">
+                            <iframe id="nnIframe" frameborder="0" scrolling="no" width="100%"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% elseif paymentMopKey == "NOVALNET_PAYPAL" %}
+            <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                {% if savedPaymentDetails is not empty and oneClickShopping == 1 %}
+                {% for paymentDetail in savedPaymentDetails %}  
+                    <div class="row" id="remove_{{paymentDetail.saveOneTimeToken}}">
+                        <div class="col-xs-12 col-sm-12">
+                            <input type="radio" name="radioOption" value="{{paymentDetail.saveOneTimeToken}}">
+                            
+                            <span> {{trans("Novalnet::PaymentMethod.paypalAccountLabel")}} {{paymentDetail.decodedMaskingDetails.paypal_account}}</span> 
+                            <button type="button" class="btn btn-danger btnDelete"  onclick="removePaymentDetails('{{paymentDetail.saveOneTimeToken}}')" value="{{paymentDetail.saveOneTimeToken}}"><span class="fa fa-trash-o"></span></button>
+                        </div>
+                    </div>
+                {% endfor %}
+                 <input type="radio" name="radioOption" id="toggleForm"><strong>  {{trans("Novalnet::PaymentMethod.addNewAccountDetails")}}</strong><br><br>
+                 <input type="hidden" name="novalnetpaypalSelectedToken" id="novalnetpaypalSelectedToken">
+                 <input type="hidden" name="newForm" id="newForm">
+                {% endif %}
+
+                <div class="row" id="newCardDetails">
+                    <div class="col-xs-12 col-sm-12 nnSavePayment">
+                        {%if oneClickShopping == 1 %}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:10px;height:10px;"><path style="fill:#0080c9;" d="M400 480H48c-26.51 0-48-21.49-48-48V80c0-26.51 21.49-48 48-48h352c26.51 0 48 21.49 48 48v352c0 26.51-21.49 48-48 48zm-204.686-98.059l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.248-16.379-6.249-22.628 0L184 302.745l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.25 16.379 6.25 22.628.001z"></path></svg>
+                            <span class="saveCardText">{{trans("Novalnet::PaymentMethod.savePaypalAccountData")}}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+         {% endif %}
+    </fieldset>
+</div>
+
+<div class="modal-footer">
+        <button type="submit" class="btn btn-primary" id="novalnetFormBtn" onclick="">
+            <i class="fa fa-check" aria-hidden="true"> </i>
+            {{ trans("Novalnet::PaymentMethod.submitButtonText") }}
+        </button>
+</div>
+</form>
+
+
+
+

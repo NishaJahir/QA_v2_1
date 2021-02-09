@@ -128,7 +128,7 @@ class NovalnetServiceProvider extends ServiceProvider
                     {   
                         $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
                         $name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
-                        $paymentName = $name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey));
+                        $paymentName = ($name ? $name : $paymentHelper->getTranslatedText(strtolower($paymentKey)));
                         $basket = $basketRepository->load();
                           $this->getLogger(__METHOD__)->error('lower', strtolower($paymentKey));
                         $this->getLogger(__METHOD__)->error('lang', $paymentHelper->getTranslatedText(strtolower($paymentKey)));
@@ -157,8 +157,8 @@ class NovalnetServiceProvider extends ServiceProvider
                                         'nnPaymentProcessUrl' => $paymentService->getProcessPaymentUrl(),
                                         'paymentMopKey'       =>  $paymentKey,
                                         'paymentName'         => $paymentName,
-                                        'ccFormDetails'       => !empty($ccFormDetails) ?? '',
-                                        'ccCustomFields'       => !empty($ccCustomFields) ?? '',
+                                        'ccFormDetails'       => !empty($ccFormDetails) ? $ccFormDetails : '',
+                                        'ccCustomFields'       => !empty($ccCustomFields) ? $ccCustomFields : '',
                                         'oneClickShopping'   => $oneClickShopping,
                                         'savedPaymentDetails' => $savedPaymentDetails,
                                         'removedSavedPaymentDetail' => $paymentHelper->getTranslatedText('removedSavedPaymentDetail'),

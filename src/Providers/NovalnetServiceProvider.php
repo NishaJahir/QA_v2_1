@@ -129,6 +129,9 @@ class NovalnetServiceProvider extends ServiceProvider
                         $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
                          $this->getLogger(__METHOD__)->error('payment Key', $paymentKey);
                         $name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
+                        $this->getLogger(__METHOD__)->error('payment name dmjhjhjhjkhjkhj', $config->get('Novalnet.novalnet_cc_payment_active'));
+                         $this->getLogger(__METHOD__)->error('payment name1', $config->get('Novalnet.novalnet_sepa_payment_name'));
+                        $this->getLogger(__METHOD__)->error('payment name2', $config->get('novalnet_sepa_payment_name'));
                         $this->getLogger(__METHOD__)->error('payment name', $name);
        $this->getLogger(__METHOD__)->error('payment new check', 'Novalnet.' . strtolower($paymentKey) . '_payment_name');
                         $paymentName = $name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey));

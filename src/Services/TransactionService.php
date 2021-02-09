@@ -51,7 +51,7 @@ class TransactionService
             $transaction->saveOneTimeToken    = !empty($transactionData['save_card_token']) ?? "";
             $transaction->maskingDetails      = !empty($transactionData['mask_details']) ?? null;
             $transaction->instalmentInfo      = !empty($transactionData['instalment_info']) ?? null;
-            
+            $this->getLogger(__METHOD__)->error('db save',  $transaction);
             $database->save($transaction);
         } catch (\Exception $e) {
             $this->getLogger(__METHOD__)->error('Novalnet transaction table insert failed!.', $e);

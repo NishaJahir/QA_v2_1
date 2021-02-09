@@ -122,7 +122,7 @@ class NovalnetServiceProvider extends ServiceProvider
         
         // Listen for the event that gets the payment method content
         $eventDispatcher->listen(GetPaymentMethodContent::class,
-                function(GetPaymentMethodContent $event) use($paymentHelper, $paymentService, $addressRepository,  $basketRepository, $sessionStorage, $twig, $config, $dataBase)
+                function(GetPaymentMethodContent $event) use($config, $paymentHelper, $paymentService, $addressRepository,  $basketRepository, $sessionStorage, $twig, $dataBase)
                 {
                     if($paymentHelper->getPaymentKeyByMop($event->getMop()))
                     {   

@@ -683,9 +683,11 @@ class PaymentService
             $this->sessionStorage->getPlugin()->setValue('nnPaymentData', null);
 
             $nnPaymentData['mop']            = $this->sessionStorage->getPlugin()->getValue('mop');
-            $this->sessionStorage->getPlugin()->setValue('mop', null);
+            $this->getLogger(__METHOD__)->error('validate response',  $nnPaymentData);
             $nnPaymentData['payment_method'] = (!empty($nnPaymentData['mop'])) ? strtolower($this->paymentHelper->getPaymentKeyByMop($nnPaymentData['mop'])) : $nnPaymentData['payment_key'];
-            
+            if ($nnPaymentData['transaction']['payment_type'] == 'PAYPAL') {
+             $nnPaymentData['payment_method'] = 'novalnet_paypal';
+            }
             $additionalInfo = $this->additionalInfo($nnPaymentData);
         
             if($nnPaymentData['payment_method'] == 'INSTALMENT_INVOICE') {

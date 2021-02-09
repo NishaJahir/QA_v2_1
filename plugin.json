@@ -26,7 +26,7 @@
     "guzzlehttp/guzzle": "6.3.*" 
   },
   "runOnBuild": [
-    "Novalnet\\Migrations\\CreateAndUpdatePaymentMethods",
+    "Novalnet\\Migrations\\CreateAndUpdatePaymentMethodsNisha",
     "Novalnet\\Migrations\\CreateAndUpdateTransactionTable"
   ],
   "dataProviders": [

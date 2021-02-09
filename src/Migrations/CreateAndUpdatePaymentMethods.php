@@ -16,13 +16,14 @@ namespace Novalnet\Migrations;
 
 use Plenty\Modules\Payment\Method\Contracts\PaymentMethodRepositoryContract;
 use Novalnet\Helper\PaymentHelper;
-
+use Plenty\Plugin\Log\Loggable;
 /**
  * Class UpgradePaymentMethods
  * @package Novalnet\Migrations
  */
-class CreateAndUpdatePaymentMethods
+class CreateAndUpdatePaymentMethodsNew
 {
+   use Loggable;
     /**
      * @var PaymentMethodRepositoryContract
      */
@@ -58,6 +59,7 @@ class CreateAndUpdatePaymentMethods
         $this->createNovalnetPaymentMethodByPaymentKey('NOVALNET_INVOICE', 'Novalnet Invoice');
         $this->createNovalnetPaymentMethodByPaymentKey('NOVALNET_PAYPAL', 'Novalnet PayPal');
         $this->createNovalnetPaymentMethodByPaymentKey('NOVALNET_INSTALMENT_INVOICE', 'Novalnet Instalment by Invoice');
+        $this->getLogger(__METHOD__)->error('create payment Name', 'create');
     }
 
     /**
@@ -82,6 +84,7 @@ class CreateAndUpdatePaymentMethods
                                 'paymentName' => $paymentName,
                                 'id' => $payment_data[0]
                                ];
+            $this->getLogger(__METHOD__)->error('update payment Name', $paymentMethodData);
             $this->paymentMethodRepository->updateName($paymentMethodData);
         }
     }

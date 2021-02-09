@@ -128,9 +128,10 @@ class NovalnetServiceProvider extends ServiceProvider
                     {   
                         $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
                         $name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
-                        $paymentName = ($name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey)));
+                        $paymentName = $name ?? $paymentHelper->getTranslatedText(strtolower($paymentKey));
                         $basket = $basketRepository->load();
                         $oneClickShopping = (int) ($config->get('Novalnet.' . strtolower($paymentKey) . '_shopping_type'));
+                        $this->getLogger(__METHOD__)->error('one click shop', $oneClickShopping);
                         // Get the payment request data
                         $paymentRequestParameters = $paymentService->getPaymentRequestParameters($basket, $paymentKey);
                         if (empty($paymentRequestParameters['data']['customer']['first_name']) && empty($paymentRequestParameters['data']['customer']['last_name'])) {
@@ -156,7 +157,7 @@ class NovalnetServiceProvider extends ServiceProvider
                                         'paymentName'         => $paymentName,
                                         'ccFormDetails'       => !empty($ccFormDetails) ?? '',
                                         'ccCustomFields'       => !empty($ccCustomFields) ?? '',
-                                        'oneClickShopping'   => (int) ($config->get('Novalnet.' . strtolower($paymentKey) . '_shopping_type')),
+                                        'oneClickShopping'   => $oneClickShopping,
                                         'savedPaymentDetails' => $savedPaymentDetails,
                                         'removedSavedPaymentDetail' => $paymentHelper->getTranslatedText('removedSavedPaymentDetail'),
                                         'savedPaymentDetailsRemovalUrl' => $paymentService->getSavedTokenRemovalUrl(),

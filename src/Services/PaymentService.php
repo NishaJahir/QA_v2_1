@@ -288,20 +288,7 @@ class PaymentService
         return false;
     }
     
-    /**
-    * Check if the customer from EU country or not
-    *
-    * @param string $paymentKey
-    * @param string $countryCode
-    * 
-    * @return bool
-    */
-    public function europeanUnionCountryValidation($paymentKey, $countryCode) 
-    {
-        $allowB2B = $this->config->get('Novalnet.' . $paymentKey . '_allow_b2b_customer');
-        $this->getLogger(__METHOD__)->error('allow b2b', $allowB2B);
-        
-    }
+   
     
     /**
      * Form customer billing and shipping details

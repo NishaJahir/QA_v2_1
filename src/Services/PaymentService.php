@@ -280,7 +280,7 @@ class PaymentService
                 }
                 // Get country validation value
                 $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
-                $this->getLogger(__METHOD__)->error('shippping', $billingShippingDetails);
+               
                 
                 return true;
             }

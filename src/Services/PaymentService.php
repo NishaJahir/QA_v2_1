@@ -281,7 +281,7 @@ class PaymentService
                 // Get country validation value
                 $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
                 $this->getLogger(__METHOD__)->error('shippping', $billingShippingDetails);
-                $countryValidation = $this->europeanUnionCountryValidation($paymentKey, $billingShippingDetails['billing']['country_code']);
+                
                 return true;
             }
         }

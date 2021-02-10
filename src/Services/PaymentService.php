@@ -262,7 +262,7 @@ class PaymentService
                 $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
                 // Check instalment cycles
                 $instalementCyclesCheck = false;
-                $instalementCycles = explode(',', $this->config->get('Novalnet.' . strtolower($paymentKey . '_cycles')));
+                $instalementCycles = explode(',', $this->config->get('Novalnet.' . $paymentKey . '_cycles'));
                 if($minimumAmount >= 1998) {
                     foreach($instalementCycles as $key => $value) {
                         $cycleAmount = ($amount / $value);
@@ -280,6 +280,7 @@ class PaymentService
                 }
                 // Get country validation value
                 $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
+                $this->getLogger(__METHOD__)->error('shippping', $billingShippingDetails);
                 $countryValidation = $this->europeanUnionCountryValidation($paymentKey, $billingShippingDetails['billing']['country_code']);
                 return true;
             }
@@ -299,18 +300,7 @@ class PaymentService
     {
         $allowB2B = $this->config->get('Novalnet.' . $paymentKey . '_allow_b2b_customer');
         $this->getLogger(__METHOD__)->error('allow b2b', $allowB2B);
-        $europeanUnionCountryCodes =  [
-            'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR',
-            'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL',
-            'PT', 'RO', 'SE', 'SI', 'SK', 'UK', 'CH'
-        ];
-        $countryValidation = false;
-        if(in_array($countryCode, ['DE', 'AT', 'CH'])) {
-            $countryValidation = true;
-        } elseif($allowB2B == true && in_array($countryCode, $europeanUnionCountryCodes)) {
-            $countryValidation = true;
-        }
-        return $countryValidation;
+        
     }
     
     /**

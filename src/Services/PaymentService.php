@@ -298,17 +298,17 @@ class PaymentService
     public function europeanUnionCountryValidation($paymentKey, $countryCode) 
     {
         $allowB2B = $this->config->get('Novalnet.' . $paymentKey . '_allow_b2b_customer');
+        $this->getLogger(__METHOD__)->error('allow b2b', $allowB2B);
         $europeanUnionCountryCodes =  [
             'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR',
             'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL',
             'PT', 'RO', 'SE', 'SI', 'SK', 'UK', 'CH'
         ];
+        $countryValidation = false;
         if(in_array($countryCode, ['DE', 'AT', 'CH'])) {
             $countryValidation = true;
         } elseif($allowB2B == true && in_array($countryCode, $europeanUnionCountryCodes)) {
             $countryValidation = true;
-        } else {
-            $countryValidation = false;
         }
         return $countryValidation;
     }

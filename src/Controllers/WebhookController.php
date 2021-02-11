@@ -604,13 +604,9 @@ class WebhookController extends Controller
     
    public function paymentCreation($message, $partialRefund = false)
     {
-		$paymentData['currency']    = $this->eventData['transaction']['currency'];
-		$paymentData['paid_amount'] = (float) ($this->eventData['transaction']['amount'] / 100);
-		$paymentData['tid']         = $this->eventTid;
-		$paymentData['order_no']    = $this->transactionHistory->orderNo;
-		$paymentData['mop']         = $this->transactionHistory->mopId;
-		$paymentData['tid_status']  = $this->eventData['transaction']['status'];
-		$paymentData['booking_text']  = $message;
+	   $requestData['mop']         = $this->transactionHistory->mopId;
+           $requestData['booking_text']  = $message;
+	   $paymentData = array_merge($paymentData, $this->eventData);
 		$this->paymentHelper->createPlentyPayment($paymentData, $partialRefund);
 	}
 }

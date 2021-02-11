@@ -263,7 +263,7 @@ class PaymentService
                 $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
                 // Check instalment cycles
                 $instalementCyclesCheck = false;
-                $instalementCycles = explode(',', $this->config->get('Novalnet.' .$paymentKey . '_cycles'));
+                $instalementCycles = explode(',', '2,3');
                 if(preg_match('/^[0-9]*$/', $minimumAmount)) {
                     foreach($instalementCycles as $key => $value) {
                         $cycleAmount = ($amount / $value);

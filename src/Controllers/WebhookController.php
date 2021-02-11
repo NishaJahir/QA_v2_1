@@ -14,6 +14,7 @@
  
 namespace Novalnet\Controllers;
 
+use Plenty\Plugin\Controller;
 use Plenty\Plugin\Log\Loggable;
 use Plenty\Plugin\Http\Request;
 use Plenty\Plugin\ConfigRepository;

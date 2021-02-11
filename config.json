@@ -42,6 +42,36 @@
             }
          }
       },
+      "Config.NovalnetMerchantScriptManagementTab":{  
+         "label":"Config.NovalnetMerchantScriptManagementTab",
+         "formFields":{  
+            "novalnet_callback_test_mode":{  
+               "type":"checkBox",
+               "required":false,
+               "label":"Config.callbackTestModeLabel",
+               "options":{ 
+                  "defaultValue":false
+               }
+            },
+            "novalnet_enable_email":{  
+               "type":"checkBox",
+               "required":false,
+               "label":"Config.enableEmailLabel",
+               "options":{  
+                  "defaultValue":false
+               }
+            },
+            "novalnet_email_to":{  
+               "type":"inputText",
+               "required":false,
+               "label":"Config.emailToLabel",
+               "options":{  
+                  "tooltip":"Config.emailToTooltip",
+                  "defaultValue":""
+               }
+            }
+         }
+      },
       "Config.NovalnetDirectDebitSEPATab":{
          "label":"Config.NovalnetDirectDebitSEPATab",
          "formFields":{

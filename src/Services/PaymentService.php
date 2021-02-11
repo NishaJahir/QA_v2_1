@@ -271,15 +271,7 @@ class PaymentService
                         }
                     }
                 }
-                // Address validation
-                $billingAddressId = $basket->customerInvoiceAddressId;
-                $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
-                $shippingAddress = $billingAddress;
-                if(!empty($basket->customerShippingAddressId)){
-                    $shippingAddress = $this->addressRepository->findAddressById($basket->customerShippingAddressId);
-                }
-                // Get country validation value
-                $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
+                
                 return true;
             }
         }

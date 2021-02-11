@@ -257,14 +257,14 @@ class PaymentService
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
                  $this->getLogger(__METHOD__)->error('basket', $basket);
+                $configMinimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
+                $minimumAmount = !empty($configMinimumAmount) ? $configMinimumAmount : 1998;
                 // Minimum amount validation
-               $minimumAmount = 5000;
-                $minimumAmount = ((preg_match('/^[0-9]*$/', $minimumAmount) && $minimumAmount >= '1998')  ? $minimumAmount : '1998');
                 $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
                 // Check instalment cycles
                 $instalementCyclesCheck = false;
                 $instalementCycles = explode(',', $this->config->get('Novalnet.' .$paymentKey . '_cycles'));
-                if($minimumAmount >= 1998) {
+                if(preg_match('/^[0-9]*$/', $minimumAmount) && $minimumAmount >= 1998) {
                     foreach($instalementCycles as $key => $value) {
                         $cycleAmount = ($amount / $value);
                         if($cycleAmount >= 999) {

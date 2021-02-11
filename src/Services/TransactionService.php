@@ -105,7 +105,7 @@ class TransactionService
     $additionalInfo = json_decode($orderDetail->additionalInfo,true);
     $additionalInfo['invoice_bankname']  = !empty($response['transaction']['bank_details']['bank_name']) ? $response['transaction']['bank_details']['bank_name'] : $additionalInfo['invoice_bankname'];
 	$additionalInfo['invoice_bankplace'] = !empty($response['transaction']['bank_details']['bank_place']) ? utf8_encode($response['transaction']['bank_details']['bank_place']) : utf8_encode($additionalInfo['invoice_bankplace']);
-	$additionalInfo['invoice_iban']      = !empty($response['transaction']['bank_details']['iban']]) ? $response['transaction']['bank_details']['iban'] : $additionalInfo['invoice_iban'];
+	$additionalInfo['invoice_iban']      = !empty($response['transaction']['bank_details']['iban']) ? $response['transaction']['bank_details']['iban'] : $additionalInfo['invoice_iban'];
 	$additionalInfo['invoice_bic']       = !empty($response['transaction']['bank_details']['bic']) ? $response['transaction']['bank_details']['bic'] : $additionalInfo['invoice_bic'];
 	$additionalInfo['invoice_account_holder'] = !empty($response['transaction']['bank_details']['account_holder']) ? $response['transaction']['bank_details']['account_holder'] : $additionalInfo['invoice_account_holder']; 
 	$additionalInfo['due_date']          = !empty($response['transaction']['due_date']) ? $response['transaction']['due_date'] : $additionalInfo['due_date'];

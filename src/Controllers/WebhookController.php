@@ -24,6 +24,7 @@ use Novalnet\Helper\PaymentHelper;
 use Novalnet\Services\PaymentService;
 use Plenty\Modules\Order\Contracts\OrderRepositoryContract;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
+use Plenty\Plugin\Mail\Contracts\MailerContract;
 use \stdClass;
 
 /**
@@ -43,6 +44,12 @@ class WebhookController extends Controller
      * @var config
      */
     private $config;
+	
+	/**
+     * @var requiredParams
+     */
+    protected $requiredParams = [];
+	
 	
 	/**
      * @var eventData
@@ -132,13 +139,13 @@ class WebhookController extends Controller
 	public function processCallback()
     {
 		try {
-            $this->eventData = json_decode($this->eventData, true);
+           
 		$this->getLogger(__METHOD__)->error('event data', $this->eventData);	
         } catch (\Exception $e) {
             $this->getLogger(__METHOD__)->error('Received data is not in the JSON format', $e);
             return false;
         }
-        
+       
         // Mandatory webhook params
         $this->requiredParams = [
                     'event' => [ 'type', 'checksum', 'tid'],
@@ -170,7 +177,7 @@ class WebhookController extends Controller
         switch ($this->eventType) {
 			case 'PAYMENT':
 				// Handle Initial PAYMENT notification (incl. communication failure, Authorization).
-				$this->renderTemplate('The webhook notification received' . ($this->eventType). 'for the TID:' .$this->eventTID);
+				$this->renderTemplate('The webhook notification received' . ($this->eventType). 'for the TID:' .$this->eventTid);
 				break;
 			case 'TRANSACTION_CAPTURE':
 			case 'TRANSACTION_CANCEL':
@@ -188,7 +195,7 @@ class WebhookController extends Controller
 				  break;
 			case "REPRESENTMENT":
 				// Handle REPRESENTMENT notification. It confirms that the representment (for Credit Card) has been received for the transaction.
-				$this->renderTemplate('The webhook notification received ' . $this->eventType . ' for the TID: ' . $this->parentTID . '  and the new reference TID was ' . $this->eventTID);
+				$this->renderTemplate('The webhook notification received ' . $this->eventType . ' for the TID: ' . $this->parentTid . '  and the new reference TID was ' . $this->eventTid);
 				break;
 			default:
 				$this->renderTemplate('The webhook notification has been received for the unhandled EVENT TYPE ' . $this->eventType);
@@ -527,7 +534,7 @@ class WebhookController extends Controller
 		if(in_array($this->eventData['transaction']['status'], ['PENDING', 'ON_HOLD', 'CONFIRMED'])) {
 			// Process Amount update
 			if(!empty($this->event_data['transaction']['due_date'])) {
-				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackduedateUpdateText', $orderLanguage), $this->eventTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency'], $this->event_data['transaction']['due_date']);
+				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackduedateUpdateText', $orderLanguage), $this->eventTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency'], $this->eventData['transaction']['due_date']);
 			} else {
 				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackamountUpdateText', $orderLanguage), $this->eventTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency']);
 			}

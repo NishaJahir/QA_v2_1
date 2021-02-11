@@ -256,6 +256,7 @@ class PaymentService
        
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
+                 $this->getLogger(__METHOD__)->error('basket', $basket);
                 // Minimum amount validation
                 $minimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
                 $minimumAmount = ((preg_match('/^[0-9]*$/', $minimumAmount) && $minimumAmount >= '1998')  ? $minimumAmount : '1998');
@@ -271,21 +272,7 @@ class PaymentService
                         }
                     }
                 }
-                $billingAddressId = $basket->customerInvoiceAddressId;
-                $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
-                $shippingAddressId = $basket->customerShippingAddressId;
-                $this->getLogger(__METHOD__)->error('billing', $billingAddress);
-                $this->getLogger(__METHOD__)->error('ship id', $shippingAddressId);
-                $addressValidation = false;
-                if(!empty($shippingAddressId))
-                {
-                    $shippingAddress = $this->addressRepository->findAddressById($shippingAddressId);
-                    $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
-                }
-                else
-                {
-                 $addressValidation = true;
-                }
+               
                 return true;
             }
       

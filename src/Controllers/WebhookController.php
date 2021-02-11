@@ -574,7 +574,7 @@ class WebhookController extends Controller
 				    $partialRefund = ($this->transactionHistory->orderTotalAmount > ($totalCallbackAmount + $this->eventData['transaction']['amount']) )? true : false;
 			    }
 		  }
-		$this->paymentHelper->createPlentyPayment($paymentData, $partialRefund);
+		$this->paymentCreation($webhookMessage, $partialRefund);
 		$this->renderTemplate($webhookMessage);
 	}
 	
@@ -602,7 +602,7 @@ class WebhookController extends Controller
         return $paymentStatus;
     }
     
-    public function paymentCreation($message)
+   public function paymentCreation($message, $partialRefund = false)
     {
 		$paymentData['currency']    = $this->eventData['transaction']['currency'];
 		$paymentData['paid_amount'] = (float) ($this->eventData['transaction']['amount'] / 100);
@@ -611,6 +611,6 @@ class WebhookController extends Controller
 		$paymentData['mop']         = $this->transactionHistory->mopId;
 		$paymentData['tid_status']  = $this->eventData['transaction']['status'];
 		$paymentData['booking_text']  = $message;
-		$this->paymentHelper->createPlentyPayment($paymentData);
+		$this->paymentHelper->createPlentyPayment($paymentData, $partialRefund);
 	}
 }

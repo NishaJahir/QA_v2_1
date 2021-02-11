@@ -271,17 +271,21 @@ class PaymentService
                         }
                     }
                 }
-                // Address validation
                 $billingAddressId = $basket->customerInvoiceAddressId;
                 $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
-                $shippingAddress = $billingAddress;
-                if(!empty($basket->customerShippingAddressId)){
-                    $shippingAddress = $this->addressRepository->findAddressById($basket->customerShippingAddressId);
+                $shippingAddressId = $basket->customerShippingAddressId;
+                $this->getLogger(__METHOD__)->error('billing', $billingAddress);
+                $this->getLogger(__METHOD__)->error('ship id', $shippingAddressId);
+                $addressValidation = false;
+                if(!empty($shippingAddressId))
+                {
+                    $shippingAddress = $this->addressRepository->findAddressById($shippingAddressId);
+                    $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
                 }
-                // Get country validation value
-                $billingShippingDetails = $this->getBillingShippingDetails($billingAddress, $shippingAddress);
-                $this->getLogger(__METHOD__)->error('bill ship', $billingShippingDetails);
-                $this->getLogger(__METHOD__)->error('bill updated', $billingShippingDetails->billing->country_code);
+                else
+                {
+                 $addressValidation = true;
+                }
                 return true;
             }
         }

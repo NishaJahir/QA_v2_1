@@ -256,8 +256,8 @@ class PaymentService
        
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
-                 $this->getLogger(__METHOD__)->error('basket', $basket);
                 $configMinimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
+                $this->getLogger(__METHOD__)->error('minimum amount', $configMinimumAmount);
                 $minimumAmount = (!empty($configMinimumAmount) && $configMinimumAmount >= 1998) ? $configMinimumAmount : 1998;
                 // Minimum amount validation
                 $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
@@ -295,7 +295,31 @@ class PaymentService
         return false;
     }
     
-   
+   /**
+    * Check if the customer from EU country or not
+    *
+    * @param string $paymentKey
+    * @param string $countryCode
+    * 
+    * @return bool
+    */
+    public function europeanUnionCountryValidation($paymentKey, $countryCode) 
+    {
+        $allowB2B = $this->config->get('Novalnet.' . $paymentKey . '_allow_b2b_customer');
+        $europeanUnionCountryCodes =  [
+            'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR',
+            'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL',
+            'PT', 'RO', 'SE', 'SI', 'SK', 'UK', 'CH'
+        ];
+        if(in_array($countryCode, ['DE', 'AT', 'CH'])) {
+            $countryValidation = true;
+        } elseif($allowB2B == true && in_array($countryCode, $europeanUnionCountryCodes)) {
+            $countryValidation = true;
+        } else {
+            $countryValidation = false;
+        }
+        return $countryValidation;
+    }
     
     /**
      * Form customer billing and shipping details

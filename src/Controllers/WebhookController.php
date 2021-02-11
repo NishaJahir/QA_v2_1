@@ -215,10 +215,12 @@ class WebhookController extends Controller
      */
     public function validateIpAddress()
     {
+	    
         $clientIp = $this->paymentHelper->getRemoteAddress();
         if (empty($clientIp)) {
             $this->renderTemplate('Novalnet HOST IP missing');
         }
+	    $this->getLogger(__METHOD__)->error('ip condn', $clientIp);
         // Condition to check whether the webhook is called from authorized IP
         if(!in_array($clientIp, $this->ipAllowed) && $this->config->get('Novalnet.novalnet_callback_test_mode') != 'true') {
            $this->renderTemplate('Novalnet callback received. Unauthorised access from the IP '. $clientIp);
@@ -294,6 +296,7 @@ class WebhookController extends Controller
      */
     public function renderTemplate($templateData)
     {
+	       $this->getLogger(__METHOD__)->error('template', $templateData);
         return $this->twig->render('Novalnet::callback.NovalnetCallback', ['comments' => $templateData]);
     }
 	

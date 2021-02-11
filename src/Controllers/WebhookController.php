@@ -25,6 +25,8 @@ use Novalnet\Services\PaymentService;
 use Plenty\Modules\Order\Contracts\OrderRepositoryContract;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Plugin\Mail\Contracts\MailerContract;
+use \Plenty\Modules\Authorization\Services\AuthHelper;
+use Novalnet\Constants\NovalnetConstants;
 use \stdClass;
 
 /**
@@ -266,9 +268,8 @@ class WebhookController extends Controller
         $tokenString  = $this->eventData['event']['tid'] . $this->eventData['event']['type'] . $this->eventData['result']['status'];
         
         if(isset($this->eventData['transaction']['amount'])) {
-            $tokenString .= $this->eventData['transaction']['amount'];
         }
-        if(isset($this->event_data['transaction']['currency'])) {
+        if(isset($this->eventData['transaction']['currency'])) {
             $tokenString .= $this->eventData ['transaction'] ['currency'];
         }
         if(!empty($accessKey)) {
@@ -426,9 +427,7 @@ class WebhookController extends Controller
 				    if($requestData['transaction']['payment_type'] == 'INVOICE' && in_array ($requestData['transaction']['status'], ['PENDING', 'ON_HOLD', 'CONFIRMED']) ){
 						$invoiceBankDetails = '<br>' . $this->paymentService->formTransactionCommentsInvoicePDF($requestData);
 						$callback_message = $callbackComments . '<br>' . $invoiceBankDetails;
-						$this->sendCallbackMail($callback_message);
 					} else {
-					  $this->sendCallbackMail($callbackComments);
 					}
 						$this->renderTemplate($callbackComments);
 				} else {

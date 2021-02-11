@@ -394,11 +394,9 @@ class WebhookController extends Controller
 					$requestData = $this->eventData;
 					$requestData['lang'] = $orderlanguage;
 					$requestData['mop']= $property->value;
-					$payment_type = (string)$this->paymentHelper->getPaymentKeyByMop($property->value);
-					$requestData['payment_id'] = $this->paymentService->getkeyByPaymentKey($payment_type);
 					
 					$transactionData                        = pluginApp(stdClass::class);
-					$transactionData->paymentName           = $this->paymentHelper->getPaymentNameByResponse($requestData['payment_id']);
+					$transactionData->paymentName           = $this->paymentHelper->getPaymentNameByResponse($requestData['transaction']['payment_type']);
 					$transactionData->orderNo               = $requestData['transaction']['order_no'];
 					$transactionData->orderTotalAmount    = $requestData['transaction']['amount'];
 					$requestData['amount'] = (float) $requestData['transaction']['amount'] / 100;
@@ -517,10 +515,10 @@ class WebhookController extends Controller
 	
 	public function handleNnTransactionRefund()
     {
-		if(!empty($this->event_data['transaction']['refund']['amount'])) {
-			$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackRefundtext', $orderLanguage), $this->parentTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency']);
-			if(!empty($this->event_data['transaction']['refund']['tid'])) {
-				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackNewTidRefundtext', $orderLanguage), $this->parentTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency'], $this->eventTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency']);
+		if(!empty($this->eventData['transaction']['refund']['amount'])) {
+			$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackRefundtext', $orderLanguage), $this->parentTid, (float) ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency']);
+			if(!empty($this->eventData['transaction']['refund']['tid'])) {
+				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackNewTidRefundtext', $orderLanguage), $this->parentTid, (float) ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency'], $this->eventTid, (float) ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency']);
 			}
 		}
 		$this->paymentCreation($webhookMessage);
@@ -532,12 +530,12 @@ class WebhookController extends Controller
     {
 		if(in_array($this->eventData['transaction']['status'], ['PENDING', 'ON_HOLD', 'CONFIRMED'])) {
 			// Process Amount update
-			if(!empty($this->event_data['transaction']['due_date'])) {
-				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackduedateUpdateText', $orderLanguage), $this->eventTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency'], $this->eventData['transaction']['due_date']);
+			if(!empty($this->eventData['transaction']['due_date'])) {
+				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackduedateUpdateText', $orderLanguage), $this->eventTid, (float) ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency'], $this->eventData['transaction']['due_date']);
 			} else {
-				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackamountUpdateText', $orderLanguage), $this->eventTid, (float) ($this->aryCaptureParams['amount'] / 100), $this->eventData['transaction']['currency']);
+				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('callbackamountUpdateText', $orderLanguage), $this->eventTid, (float) ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency']);
 			}
-			$this->updatePlentyPayment($transactionHistoryDetails->orderNo, $webhookMessage, $this->eventData['transaction']['status']); // Need to check update or create
+			$this->paymentCreation($webhookMessage);
 		}
 		$this->renderTemplate($webhookMessage);
 	}
@@ -546,7 +544,7 @@ class WebhookController extends Controller
     {
 		$webhookMessage  = sprintf($this->paymentHelper->getTranslatedText('callbackInitialExecution', $orderLanguage), $this->parentTid, ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency'], date('Y-m-d H:i:s'), $this->eventTid ).'</br>';
 		if ($this->eventType == 'ONLINE_TRANSFER_CREDIT') {
-			$webhookMessage .= sprintf($this->paymentHelper->getTranslatedText('callback_status_change',$orderLanguage), (float) ($this->aryCaptureParams['amount'] / 100), $transactionHistoryDetails->orderNo );
+			$webhookMessage .= sprintf($this->paymentHelper->getTranslatedText('callback_status_change',$orderLanguage), (float) ($this->eventData['transaction']['amount'] / 100), $transactionHistoryDetails->orderNo );
 			$this->paymentCreation($webhookMessage);
 		} elseif(in_array($this->eventType, ['INVOICE_CREDIT'])) {
 				if ($transactionHistoryDetails->orderPaidAmount < $transactionHistoryDetails->orderTotalAmount) {
@@ -559,7 +557,7 @@ class WebhookController extends Controller
 	
 	public function handleNnChargeback()
     {
-		$webhookMessage = sprintf( $this->paymentHelper->getTranslatedText('callbackChargebackExecution',$orderLanguage), $nnTransactionHistory->tid, sprintf( '%0.2f',( $this->aryCaptureParams['amount']/100) ), $this->aryCaptureParams['currency'], date('Y-m-d H:i:s'), $this->aryCaptureParams['tid'] );
+		$webhookMessage = sprintf( $this->paymentHelper->getTranslatedText('callbackChargebackExecution',$orderLanguage), $nnTransactionHistory->tid, sprintf( '%0.2f',( $this->eventData['transaction']['amount']/100) ), $this->eventData['transaction']['currency'], date('Y-m-d H:i:s'), $this->eventTid );
 		
 		$this->saveTransactionLog($transactionHistoryDetails);
 		$this->paymentCreation($webhookMessage);

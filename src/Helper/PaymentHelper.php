@@ -152,7 +152,7 @@ class PaymentHelper
      *
      * @param array $requestData
      */
-    public function createPlentyPayment($requestData) 
+    public function createPlentyPayment($requestData, $partialRefund = false) 
     {
         try {
         /** @var Payment $payment */

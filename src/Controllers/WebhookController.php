@@ -182,6 +182,7 @@ class WebhookController extends Controller
         $paymentStatus = $this->getPreviousPaymentStatus($this->transactionHistory->orderNo);
         switch ($this->eventType) {
 			case 'PAYMENT':
+			 $this->getLogger(__METHOD__)->error('initial',  $this->orderLanguage);
 				// Handle Initial PAYMENT notification (incl. communication failure, Authorization).
 				$this->renderTemplate('The webhook notification received' . ($this->eventType). 'for the TID:' .$this->eventTid);
 				break;
@@ -358,6 +359,7 @@ class WebhookController extends Controller
 				$this->renderTemplate('Transaction mapping failed');
 			}
         }
+		 $this->getLogger(__METHOD__)->error('order obj', $orderObj);
         return $orderObj;
 	}
 	

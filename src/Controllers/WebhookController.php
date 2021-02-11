@@ -221,9 +221,10 @@ class WebhookController extends Controller
         if (empty($clientIp)) {
             return $this->renderTemplate('Novalnet HOST IP missing');
         }
-	    $this->getLogger(__METHOD__)->error('ip condn', $clientIp);
+	    $this->getLogger(__METHOD__)->error('donfg', $this->config->get('Novalnet.novalnet_callback_test_mode'));
         // Condition to check whether the webhook is called from authorized IP
-        if(!in_array($clientIp, $this->ipAllowed) && $this->config->get('Novalnet.novalnet_callback_test_mode') != 'true') {
+        if(!in_array($clientIp, $this->ipAllowed) && trim($this->config->get('Novalnet.novalnet_callback_test_mode')) != true) {
+		$this->getLogger(__METHOD__)->error('call', $clientIp);
            return $this->renderTemplate('Novalnet callback received. Unauthorised access from the IP '. $clientIp);
         }
         return false;

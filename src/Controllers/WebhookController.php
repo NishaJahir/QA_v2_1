@@ -15,12 +15,15 @@
 namespace Novalnet\Controllers;
 
 use Plenty\Plugin\Log\Loggable;
+use Plenty\Plugin\Http\Request;
+use Plenty\Plugin\ConfigRepository;
 use Plenty\Plugin\Templates\Twig;
 use Novalnet\Services\TransactionService;
 use Novalnet\Helper\PaymentHelper;
 use Novalnet\Services\PaymentService;
 use Plenty\Modules\Order\Contracts\OrderRepositoryContract;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
+use \stdClass;
 
 /**
  * Class WebhookController
@@ -30,6 +33,15 @@ use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 class WebhookController extends Controller
 {
 	use Loggable;
+    /**
+     * @var Request
+     */
+    private $request;
+	
+	/**
+     * @var config
+     */
+    private $config;
 	
 	/**
      * @var eventData
@@ -93,13 +105,17 @@ class WebhookController extends Controller
      * @param Twig $twig
      * @param TransactionService $tranactionService
      */
-    public function __construct(Twig $twig,
+    public function __construct(Request $request,
+				ConfigRepository $config,
+	    Twig $twig,
 								TransactionService $tranactionService,
 								PaymentHelper $paymentHelper,
 								PaymentService $paymentService,
 								OrderRepositoryContract $orderRepository,
 								PaymentRepositoryContract $paymentRepository)
     {
+	    $this->eventData     = $this->request->all();
+	    $this->config               = $config;
 		$this->twig                 = $twig;
 		$this->transaction          = $tranactionService;
 		$this->paymentHelper        = $paymentHelper;
@@ -115,7 +131,8 @@ class WebhookController extends Controller
 	public function processCallback()
     {
 		try {
-            $this->eventData = json_decode(file_get_contents('php://input'), true);
+            $this->eventData = json_decode($this->eventData, true);
+		$this->getLogger(__METHOD__)->error('event data', $this->eventData);	
         } catch (\Exception $e) {
             $this->getLogger(__METHOD__)->error('Received data is not in the JSON format', $e);
             return false;
@@ -247,7 +264,7 @@ class WebhookController extends Controller
             $tokenString .= $this->eventData ['transaction'] ['currency'];
         }
         if(!empty($accessKey)) {
-            $tokenString .= strrev($accessKey);
+            $tokenString .= implode(array_reverse(str_split($accessKey)));
         }
         $generatedChecksum = hash('sha256', $tokenString);
         if($generatedChecksum !== $this->eventData ['event']['checksum']) {

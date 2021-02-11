@@ -327,4 +327,23 @@ class PaymentHelper
     {
         return sprintf('%0.2f', $amount) * 100;
     }
+    
+    /**
+     * Get the payment method executed to store in the transaction log for future use
+     *
+     * @param int  $paymentKey
+     
+     * @return string
+     */
+    public function getPaymentNameByResponse($paymentKey)
+    {
+        $paymentMethodName = [
+            'DIRECT_DEBIT_SEPA'  => 'novalnet_sepa',
+            'CREDITCARD'   => 'novalnet_cc',
+            'INVOICE'  => 'novalnet_invoice',
+            'PAYPAL'  => 'novalnet_paypal',
+            'INSTALMENT_INVOICE'  => 'novalnet_instalment_invoice'
+        ];
+        return $paymentMethodName[$paymentKey];
+    }
 }

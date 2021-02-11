@@ -606,6 +606,7 @@ class WebhookController extends Controller
     {
 	   $requestData['mop']         = $this->transactionHistory->mopId;
            $requestData['booking_text']  = $message;
+	   $paymentData = [];
 	   $paymentData = array_merge($paymentData, $this->eventData);
 		$this->paymentHelper->createPlentyPayment($paymentData, $partialRefund);
 	}

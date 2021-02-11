@@ -128,7 +128,7 @@ class WebhookController extends Controller
 								OrderRepositoryContract $orderRepository,
 								PaymentRepositoryContract $paymentRepository)
     {
-	    $this->eventData     = $this->request->all();
+	    $this->eventData     = $request->all();
 	    $this->config               = $config;
 		$this->twig                 = $twig;
 		$this->transaction          = $tranactionService;

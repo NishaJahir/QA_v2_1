@@ -176,7 +176,7 @@ class PaymentHelper
         $paymentProperty[]   = $this->getPaymentProperty(PaymentProperty::TYPE_EXTERNAL_TRANSACTION_STATUS, $requestData['transaction']['status']);
         
         $payment->properties = $paymentProperty;
-        
+         $this->getLogger(__METHOD__)->error('Novalnet::createPlentyPayment', $payment);
         $paymentObj = $this->paymentRepository->createPayment($payment);
         
         $this->assignPlentyPaymentToPlentyOrder($paymentObj, (int)$requestData['transaction']['order_no']);

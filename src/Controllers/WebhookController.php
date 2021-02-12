@@ -300,6 +300,7 @@ class WebhookController extends Controller
     {
 	       $this->getLogger(__METHOD__)->error('template', $templateData);
         return $this->twig->render('Novalnet::callback.NovalnetCallback', ['comments' => $templateData]);
+	    exit;
     }
 	
 	/**

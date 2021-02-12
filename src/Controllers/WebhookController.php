@@ -190,7 +190,7 @@ class WebhookController extends Controller
         $paymentStatus = $this->getPreviousPaymentStatus($this->transactionHistory->orderNo);
         switch ($this->eventType) {
 			case 'PAYMENT':
-			 $this->getLogger(__METHOD__)->error('initial',  $this->orderLanguage);
+			 
 				// Handle Initial PAYMENT notification (incl. communication failure, Authorization).
 				return $this->renderTemplate('The webhook notification received' . ($this->eventType). 'for the TID:' .$this->eventTid);
 				break;
@@ -233,10 +233,10 @@ class WebhookController extends Controller
         if (empty($clientIp)) {
             return 'Novalnet HOST IP missing';
         }
-	    $this->getLogger(__METHOD__)->error('donfg', $this->config->get('Novalnet.novalnet_callback_test_mode'));
+	   
         // Condition to check whether the webhook is called from authorized IP
         if(!in_array($clientIp, $this->ipAllowed) && trim($this->config->get('Novalnet.novalnet_callback_test_mode')) != true) {
-		$this->getLogger(__METHOD__)->error('call', $clientIp);
+		
 		return 'Novalnet callback received. Unauthorised access from the IP '. $clientIp;
           
         }
@@ -312,7 +312,7 @@ class WebhookController extends Controller
      */
     public function renderTemplate($templateData)
     {
-	       $this->getLogger(__METHOD__)->error('template', $templateData);
+	     
         return $this->twig->render('Novalnet::callback.NovalnetCallback', ['comments' => $templateData]);
 	    
     }
@@ -375,7 +375,7 @@ class WebhookController extends Controller
 				return ('Transaction mapping failed');
 			}
         }
-		 $this->getLogger(__METHOD__)->error('order obj', $orderObj);
+		 
         return $orderObj;
 	}
 	

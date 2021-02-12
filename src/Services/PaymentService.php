@@ -253,7 +253,7 @@ class PaymentService
     */
     public function checkPaymentDisplayConditions(Basket $basket, $paymentKey) 
     {
-        if (!is_null($basket) && $basket instanceof Basket) {
+        try {
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
                 // Minimum amount validation
@@ -262,7 +262,7 @@ class PaymentService
                 $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
                 // Check instalment cycles
                 $instalementCyclesCheck = false;
-                $instalementCycles = explode(',', $this->config->get('Novalnet.' . strtolower($paymentKey . '_cycles')));
+                $instalementCycles = explode(',', $this->config->get('Novalnet.' .$paymentKey . '_cycles'));
                 if($minimumAmount >= 1998) {
                     foreach($instalementCycles as $key => $value) {
                         $cycleAmount = ($amount / $value);
@@ -289,9 +289,13 @@ class PaymentService
                     return false;
                 }
             }
+        
+       } catch(\Exception $e) {
+        $this->getLogger(__METHOD__)->error('catch error', $basket);
+            return false;
         }
         return false;
-        
+     
     }
     
    /**

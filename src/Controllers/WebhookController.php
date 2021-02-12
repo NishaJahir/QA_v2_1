@@ -573,10 +573,10 @@ class WebhookController extends Controller
     {
 		$this->getLogger(__METHOD__)->error('type', $this->eventType);
 		$webhookMessage  = sprintf($this->paymentHelper->getTranslatedText('callbackInitialExecution', $this->orderLanguage), $this->parentTid, ($this->eventData['transaction']['amount'] / 100), $this->eventData['transaction']['currency'], date('Y-m-d H:i:s'), $this->eventTid ).'</br>';
-		if ($this->eventType == 'ONLINE_TRANSFER_CREDIT') {
+		if ($this->eventData['transaction']['payment_type'] == 'ONLINE_TRANSFER_CREDIT') {
 			$webhookMessage .= sprintf($this->paymentHelper->getTranslatedText('callback_status_change',$this->orderLanguage), (float) ($this->eventData['transaction']['amount'] / 100), $this->transactionHistory->orderNo );
 			$this->paymentCreation($webhookMessage);
-		} elseif(in_array($this->eventType, ['INVOICE_CREDIT'])) {
+		} elseif(in_array($this->eventData['transaction']['payment_type'], ['INVOICE_CREDIT'])) {
 			$this->getLogger(__METHOD__)->error('credtr', $this->transactionHistory);
 				if ($this->transactionHistory->orderPaidAmount < $this->transactionHistory->orderTotalAmount) {
                     $this->saveTransactionLog($this->transactionHistory);

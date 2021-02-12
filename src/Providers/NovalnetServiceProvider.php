@@ -163,6 +163,8 @@ class NovalnetServiceProvider extends ServiceProvider
                                         'savedPaymentDetailsRemovalUrl' => $paymentService->getSavedTokenRemovalUrl(),
                                     ]);
                                 } elseif (in_array($paymentKey, ['NOVALNET_INSTALMENT_INVOICE'])) {
+                                    $response =  $paymentService->checkPaymentDisplayConditions(strtolower($paymentKey), $basket);
+                                $this->getLogger(__METHOD__)->error('final check', $response);
                                     $content = $twig->render('Novalnet::PaymentForm.NovalnetAdditionalPaymentForm', [
                                     'nnPaymentProcessUrl' => $paymentService->getProcessPaymentUrl(),
                                     'paymentMopKey'       =>  $paymentKey,

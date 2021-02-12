@@ -252,7 +252,8 @@ class WebhookController extends Controller
     {
        // Validate required parameter
         foreach ($requiredParams as $category => $parameters) {
-            if (empty($this->eventData [$category])) {
+		$this->getLogger(__METHOD__)->error('required param', $requiredParams);
+            if (empty($this->eventData[$category])) {
                 // Could be a possible manipulation in the notification data
                 return 'Required parameter category(' . $category. ') not received';
             } elseif (!empty($parameters)) {

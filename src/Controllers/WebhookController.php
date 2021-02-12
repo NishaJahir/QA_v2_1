@@ -158,10 +158,18 @@ class WebhookController extends Controller
                     'result' => ['status']
 					];
 		// validated the IP Address
-		$this->validateIpAddress();
+		$displayMessage = $this->validateIpAddress();
+		if ($displayMessage)
+        {
+            return $this->renderTemplate($displayMessage);
+        }
 		
 		// Validates the webhook params before processing
-        $this->validateEventParams($this->requiredParams);
+        $displayMessage = $this->validateEventParams($this->requiredParams);
+		if ($displayMessage)
+        {
+            return $this->renderTemplate($displayMessage);
+        }
         
         // Set Event data
         $this->eventType = $this->eventData['event']['type'];
@@ -188,17 +196,21 @@ class WebhookController extends Controller
 				break;
 			case 'TRANSACTION_CAPTURE':
 			case 'TRANSACTION_CANCEL':
-				  $this->handleNnTransactionCaptureCancel($paymentStatus);
+				  $displayMessage = $this->handleNnTransactionCaptureCancel($paymentStatus);
+			return $this->renderTemplate($displayMessage);
 				  break;
 			case 'TRANSACTION_REFUND':
 			case 'CHARGEBACK':
-				  $this->handleNnTransactionRefund();
+				  $displayMessage = $this->handleNnTransactionRefund();
+			          return $this->renderTemplate($displayMessage);
 				  break;
 			case 'TRANSACTION_UPDATE':
-				  $this->handleNnTransactionUpdate();
+				  $displayMessage = $this->handleNnTransactionUpdate();
+			return $this->renderTemplate($displayMessage);
 				  break;
 			case 'CREDIT':
-				  $this->handleNnCredit();
+				  $displayMessage = $this->handleNnCredit();
+			return $this->renderTemplate($displayMessage);
 				  break;
 			case "REPRESENTMENT":
 				// Handle REPRESENTMENT notification. It confirms that the representment (for Credit Card) has been received for the transaction.
@@ -219,13 +231,13 @@ class WebhookController extends Controller
 	    
         $clientIp = $this->paymentHelper->getRemoteAddress();
         if (empty($clientIp)) {
-            return $this->renderTemplate('Novalnet HOST IP missing');
+            return 'Novalnet HOST IP missing';
         }
 	    $this->getLogger(__METHOD__)->error('donfg', $this->config->get('Novalnet.novalnet_callback_test_mode'));
         // Condition to check whether the webhook is called from authorized IP
         if(!in_array($clientIp, $this->ipAllowed) && trim($this->config->get('Novalnet.novalnet_callback_test_mode')) != true) {
 		$this->getLogger(__METHOD__)->error('call', $clientIp);
-		return $this->twig->render('Novalnet::callback.NovalnetCallback', ['comments' => 'Novalnet callback received. Unauthorised access from the IP '. $clientIp]);
+		return 'Novalnet callback received. Unauthorised access from the IP '. $clientIp;
           
         }
         return false;
@@ -242,14 +254,14 @@ class WebhookController extends Controller
         foreach ($requiredParams as $category => $parameters) {
             if (empty($this->eventData [$category])) {
                 // Could be a possible manipulation in the notification data
-                return $this->renderTemplate('Required parameter category(' . $category. ') not received');
+                return 'Required parameter category(' . $category. ') not received';
             } elseif (!empty($parameters)) {
                 foreach ($parameters as $parameter) {
                     if (empty($this->eventData [$category] [$parameter])) {
                         // Could be a possible manipulation in the notification data
-                       return $this->renderTemplate('Required parameter(' . $parameter . ') in the category($category) not received');
+                       return 'Required parameter(' . $parameter . ') in the category($category) not received';
                     } elseif (in_array($parameter, ['tid'], true) && ! preg_match('/^\d{17}$/', $this->eventData [$category] [$parameter])) {
-                        return $this->renderTemplate('Invalid TID received in the category(' . $category . ') not received $parameter');
+                        return 'Invalid TID received in the category(' . $category . ') not received $parameter';
                     }
                 }
             }
@@ -260,9 +272,9 @@ class WebhookController extends Controller
         
         // Validate TID's from the event data
         if(! preg_match('/^\d{17}$/', $this->eventData['event']['tid'])) {
-            return $this->renderTemplate('Invalid event TID: ' . $this->eventData['event']['tid'] . ' received for the event('. $this->eventData['event']['type'] .')');
+            return 'Invalid event TID: ' . $this->eventData['event']['tid'] . ' received for the event('. $this->eventData['event']['type'] .')';
         } elseif($this->eventData['event']['parent_tid'] && !preg_match('/^\d{17}$/', $this->eventData['event']['parent_tid'])) {
-            return $this->renderTemplate('Invalid event TID: ' . $this->eventData['event']['parent_tid'] . ' received for the event('. $this->eventData['event']['type'] .')');
+            return 'Invalid event TID: ' . $this->eventData['event']['parent_tid'] . ' received for the event('. $this->eventData['event']['type'] .')';
         }
     }
     
@@ -286,7 +298,7 @@ class WebhookController extends Controller
         }
         $generatedChecksum = hash('sha256', $tokenString);
         if($generatedChecksum !== $this->eventData ['event']['checksum']) {
-           return $this->renderTemplate('While notifying some data has been changed. The hash check failed');
+           return 'While notifying some data has been changed. The hash check failed';
         }
     }
     
@@ -341,7 +353,7 @@ class WebhookController extends Controller
 
             if(!empty($this->eventData['transaction']['order_no']) && $this->eventData['transaction']['order_no'] != $transactionDetail->orderNo)
             {
-                 return $this->renderTemplate('Order Number is not valid.');
+                 return 'Order Number is not valid.';
             }
         }
         else
@@ -359,7 +371,7 @@ class WebhookController extends Controller
 				$subject = $mailNotification['subject'];
 				$mailer = pluginApp(MailerContract::class);
 				$mailer->sendHtml($message,'nishab_j@novalnetsolutions.com',$subject,[],[]);
-				return $this->renderTemplate('Transaction mapping failed');
+				return ('Transaction mapping failed');
 			}
         }
 		 $this->getLogger(__METHOD__)->error('order obj', $orderObj);
@@ -439,13 +451,13 @@ class WebhookController extends Controller
 						$callback_message = $callbackComments . '<br>' . $invoiceBankDetails;
 					} else {
 					}
-						return $this->renderTemplate($callbackComments);
+						return ($callbackComments);
 				} else {
-						return $this->renderTemplate('Given payment type is not matched.');
+						return ('Given payment type is not matched.');
 				}
 			}
 		}
-		return $this->renderTemplate('Novalnet_callback script executed.');
+		return ('Novalnet_callback script executed.');
     }
     
     /**
@@ -519,9 +531,9 @@ class WebhookController extends Controller
 				$webhookMessage = sprintf($this->paymentHelper->getTranslatedText('transactionCancel', $this->orderLanguage), date('d.m.Y'), date('H:i:s'));
 				$this->paymentCreation($webhookMessage);
 			}
-			return $this->renderTemplate($webhookMessage);
+			return ($webhookMessage);
 		} else {
-			return $this->renderTemplate('Novalnet Callbackscript received. Payment type ( '.$this->eventType.' ) is not applicable for this process!');
+			return ('Novalnet Callbackscript received. Payment type ( '.$this->eventType.' ) is not applicable for this process!');
 		}
 	}
 	
@@ -535,7 +547,7 @@ class WebhookController extends Controller
 		}
 		$this->paymentCreation($webhookMessage);
 		$this->saveTransactionLog($this->transactionHistory);
-		return $this->renderTemplate($webhookMessage);
+		return ($webhookMessage);
 	}
 	
 	public function handleNnTransactionUpdate()
@@ -549,7 +561,7 @@ class WebhookController extends Controller
 			}
 			$this->paymentCreation($webhookMessage);
 		}
-		return $this->renderTemplate($webhookMessage);
+		return ($webhookMessage);
 	}
 	
 	public function handleNnCredit()
@@ -564,7 +576,7 @@ class WebhookController extends Controller
 					$this->paymentCreation($webhookMessage);
 				}
 		}
-        return $this->renderTemplate($webhookMessage);                                  
+        return ($webhookMessage);                                  
 	}
 	
 	public function handleNnChargeback()
@@ -583,7 +595,7 @@ class WebhookController extends Controller
 			    }
 		  }
 		$this->paymentCreation($webhookMessage, $partialRefund);
-		return $this->renderTemplate($webhookMessage);
+		return ($webhookMessage);
 	}
 	
 	/**
@@ -615,7 +627,7 @@ class WebhookController extends Controller
 	   $requestData['mop']         = $this->transactionHistory->mopId;
            $requestData['booking_text']  = $message;
 	   $paymentData = [];
-	   $paymentData = array_merge($paymentData, $this->eventData);
+	   $paymentData = array_merge($requestData, $this->eventData);
 		$this->paymentHelper->createPlentyPayment($paymentData, $partialRefund);
 	}
 }

@@ -257,7 +257,7 @@ class PaymentService
         $guaranteePayment = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
         if ($guaranteePayment == 'true') {
             // Get guarantee minimum amount value
-            $minimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
+            $minimumAmount = $this->getNovalnetConfig($paymentKey . '_min_amount');
             $minimumAmount = ((preg_match('/^[0-9]*$/', $minimumAmount) && $minimumAmount >= '1998')  ? $minimumAmount : '1998');
             $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
 
@@ -910,5 +910,10 @@ class PaymentService
         $comments .= PHP_EOL;
         }
         return $comments;
+    }
+    
+    public function getNovalnetConfig($key)
+    {
+        return preg_replace('/\s+/', '', $this->config->get("Novalnet.$key"));
     }
 }

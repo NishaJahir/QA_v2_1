@@ -204,7 +204,6 @@ class WebhookController extends Controller
 			          return $this->renderTemplate($displayMessage);
 				  break;
 			case 'CHARGEBACK':
-			handleNnChargeback
 				  $displayMessage = $this->handleNnChargeback();
 			          return $this->renderTemplate($displayMessage);
 				  break;

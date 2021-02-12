@@ -178,7 +178,7 @@ class WebhookController extends Controller
         
         // Get order details
         $this->transactionHistory = $this->getOrderReference();
-		
+	$this->getLogger(__METHOD__)->('order details',  $this->transactionHistory);
 		// If Order details missing render the mapping failed
 		if(is_string($this->transactionHistory))
 		{

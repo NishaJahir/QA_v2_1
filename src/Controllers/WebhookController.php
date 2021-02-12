@@ -21,7 +21,7 @@ use Plenty\Plugin\ConfigRepository;
 use Plenty\Plugin\Templates\Twig;
 use Novalnet\Services\TransactionService;
 use Novalnet\Helper\PaymentHelper;
-use Novalnet\Services\PaymentServic1e;
+use Novalnet\Services\PaymentService;
 use Plenty\Modules\Order\Contracts\OrderRepositoryContract;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Plugin\Mail\Contracts\MailerContract;

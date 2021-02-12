@@ -162,7 +162,7 @@ class PaymentHelper
         $payment->transactionType = Payment::TRANSACTION_TYPE_BOOKED_POSTING;
         $payment->status          = ($requestData['transaction']['status'] == 'FAILURE' ? Payment::STATUS_CANCELED : (in_array($requestData['transaction']['status'], ['PENDING', 'ON_HOLD']) ? Payment::STATUS_APPROVED : Payment::STATUS_CAPTURED));
         $payment->currency        = !empty($requestData['transaction']['currency']) ? $requestData['transaction']['currency'] : $requestData['currency'] ;
-        $payment->amount          = (in_array($requestData['transaction']['status'], ['PENDING', 'ON_HOLD', 'FAILURE'] || empty($requestData['transaction']['amount'])) ? 0 : ( $requestData['transaction']['amount'] / 100 ) );
+        $payment->amount          = (in_array($requestData['transaction']['status'], ['PENDING', 'ON_HOLD', 'FAILURE']) || empty($requestData['transaction']['amount'])) ? 0 : ( $requestData['transaction']['amount'] / 100 ) ;
         if(isset($requestData['booking_text']) && !empty($requestData['booking_text'])) {
         $bookingText = $requestData['booking_text'];
         } else {

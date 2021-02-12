@@ -225,7 +225,8 @@ class WebhookController extends Controller
         // Condition to check whether the webhook is called from authorized IP
         if(!in_array($clientIp, $this->ipAllowed) && trim($this->config->get('Novalnet.novalnet_callback_test_mode')) != true) {
 		$this->getLogger(__METHOD__)->error('call', $clientIp);
-           return $this->renderTemplate('Novalnet callback received. Unauthorised access from the IP '. $clientIp);
+		return $this->twig->render('Novalnet::callback.NovalnetCallback', ['comments' => 'Novalnet callback received. Unauthorised access from the IP '. $clientIp]);
+          
         }
         return false;
     }

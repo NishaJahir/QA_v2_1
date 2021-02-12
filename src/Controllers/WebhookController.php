@@ -21,7 +21,7 @@ use Plenty\Plugin\ConfigRepository;
 use Plenty\Plugin\Templates\Twig;
 use Novalnet\Services\TransactionService;
 use Novalnet\Helper\PaymentHelper;
-use Novalnet\Services\PaymentService;
+use Novalnet\Services\PaymentServic1e;
 use Plenty\Modules\Order\Contracts\OrderRepositoryContract;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Plugin\Mail\Contracts\MailerContract;
@@ -178,7 +178,7 @@ class WebhookController extends Controller
         
         // Get order details
         $this->transactionHistory = $this->getOrderReference();
-	$this->getLogger(__METHOD__)->('order details',  $this->transactionHistory);
+	$this->getLogger(__METHOD__)->error('order details',  $this->transactionHistory);
 		// If Order details missing render the mapping failed
 		if(is_string($this->transactionHistory))
 		{

@@ -200,8 +200,12 @@ class WebhookController extends Controller
 			return $this->renderTemplate($displayMessage);
 				  break;
 			case 'TRANSACTION_REFUND':
+			 $displayMessage = $this->handleNnTransactionRefund();
+			          return $this->renderTemplate($displayMessage);
+				  break;
 			case 'CHARGEBACK':
-				  $displayMessage = $this->handleNnTransactionRefund();
+			handleNnChargeback
+				  $displayMessage = $this->handleNnChargeback();
 			          return $this->renderTemplate($displayMessage);
 				  break;
 			case 'TRANSACTION_UPDATE':
@@ -625,8 +629,18 @@ class WebhookController extends Controller
     
    public function paymentCreation($message, $partialRefund = false)
     {
+	   $transactionDetails = $this->paymentService->getDatabaseValues($this->transactionHistory->orderNo);
 	   $requestData['mop']         = $this->transactionHistory->mopId;
            $requestData['booking_text']  = $message;
+	   if(empty($this->eventData['transaction']['currency'])) {
+		$requestData['currency']  = $transactionDetails[0]['currency'];   
+	   }
+	   if(in_array($this->eventType, ['TRANSACTION_REFUND', 'CHARGEBACK'])) {
+		$requestData['type']  = 'debit';   
+	   } elseif ($this->eventType == 'CREDIT') {
+		$requestData['type']  = 'credit';      
+	   }
+		   
 	   $paymentData = [];
 	   $paymentData = array_merge($requestData, $this->eventData);
 		$this->paymentHelper->createPlentyPayment($paymentData, $partialRefund);

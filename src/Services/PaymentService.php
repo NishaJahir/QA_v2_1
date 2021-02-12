@@ -272,9 +272,7 @@ class PaymentService
                         }
                     }
                 }
-               // Address validation
-                $billingAddressId = $basket->customerInvoiceAddressId;
-                $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
+               
                 
                 return true;
             }

@@ -256,7 +256,7 @@ class PaymentService
        
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
-                $configMinimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
+                $configMinimumAmount = 5000;
                 $this->getLogger(__METHOD__)->error('minimum amount', $configMinimumAmount);
                 $minimumAmount = (!empty($configMinimumAmount) && $configMinimumAmount >= 1998) ? $configMinimumAmount : 1998;
                 // Minimum amount validation

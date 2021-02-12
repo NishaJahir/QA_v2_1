@@ -254,35 +254,59 @@ class PaymentService
     public function checkPaymentDisplayConditions(Basket $basket, $paymentKey) 
     {
        
-            $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
-            if ($paymentActive == 'true') {
-                $configMinimumAmount = 5000;
-                $this->getLogger(__METHOD__)->error('minimum amount', $configMinimumAmount);
-                $minimumAmount = (!empty($configMinimumAmount) && $configMinimumAmount >= 1998) ? $configMinimumAmount : 1998;
-                // Minimum amount validation
-                $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
-                // Check instalment cycles
-                $instalementCyclesCheck = false;
-                $instalementCycles = explode(',', trim($this->config->get('Novalnet.'.$paymentKey. '_cycles')));
-                if(preg_match('/^[0-9]*$/', $minimumAmount)) {
-                    foreach($instalementCycles as $key => $value) {
-                        $cycleAmount = ($amount / $value);
-                        if($cycleAmount >= 999) {
-                            $instalementCyclesCheck = true;
-                        }
-                    }
-                }
-               // Address validation
-                $billingAddressId = $basket->customerInvoiceAddressId;
-                $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
-                $shippingAddress = $billingAddress;
-                if(!empty($basket->customerShippingAddressId)){
-                    $shippingAddress = $this->addressRepository->findAddressById($basket->customerShippingAddressId);
-                }
-                
-                return true;
+        $guaranteePayment = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
+        if ($guaranteePayment == 'true') {
+            // Get guarantee minimum amount value
+            $minimumAmount = trim($this->config->get('Novalnet.'.$paymentKey. '_min_amount'));
+            $minimumAmount = ((preg_match('/^[0-9]*$/', $minimumAmount) && $minimumAmount >= '1998')  ? $minimumAmount : '1998');
+            $amount        = (sprintf('%0.2f', $basket->basketAmount) * 100);
+
+            $billingAddressId = $basket->customerInvoiceAddressId;
+            $billingAddress = $this->addressRepository->findAddressById($billingAddressId);
+            $customerBillingIsoCode = strtoupper($this->countryRepository->findIsoCode($billingAddress->countryId, 'iso_code_2'));
+
+            $shippingAddressId = $basket->customerShippingAddressId;
+
+            $addressValidation = false;
+            if(!empty($shippingAddressId))
+            {
+                $shippingAddress = $this->addressRepository->findAddressById($shippingAddressId);
+                $customerShippingIsoCode = strtoupper($this->countryRepository->findIsoCode($shippingAddress->countryId, 'iso_code_2'));
+
+                // Billing address
+                $billingAddress = ['street_address' => (($billingAddress->street) ? $billingAddress->street : $billingAddress->address1),
+                                   'city'           => $billingAddress->town,
+                                   'postcode'       => $billingAddress->postalCode,
+                                   'country'        => $customerBillingIsoCode,
+                                  ];
+                // Shipping address
+                $shippingAddress = ['street_address' => (($shippingAddress->street) ? $shippingAddress->street : $shippingAddress->address1),
+                                    'city'           => $shippingAddress->town,
+                                    'postcode'       => $shippingAddress->postalCode,
+                                    'country'        => $customerShippingIsoCode,
+                                   ];
+
+             }
+             else
+             {
+                 $addressValidation = true;
+             }
+            // Check guarantee payment
+            if ((((int) $amount >= (int) $minimumAmount && in_array(
+                $customerBillingIsoCode,
+                [
+                 'DE',
+                 'AT',
+                 'CH',
+                ]
+            ) && $basket->currency == 'EUR' && ($addressValidation || ($billingAddress === $shippingAddress)))
+            )) {
+                $processingType = true;
+            } else {
+                $processingType = false;
             }
-      
+            return $processingType;
+        }//end if
         return false;
     }
     

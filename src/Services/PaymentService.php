@@ -254,6 +254,7 @@ class PaymentService
     public function checkPaymentDisplayConditions(Basket $basket, $paymentKey) 
     {
         try {
+            if (! is_null($basket) && $basket instanceof Basket && !empty($basket->customerInvoiceAddressId)) {
             $paymentActive = $this->config->get('Novalnet.'.$paymentKey.'_payment_active');
             if ($paymentActive == 'true') {
                 // Minimum amount validation
@@ -289,7 +290,7 @@ class PaymentService
                     return false;
                 }
             }
-        
+           }
        } catch(\Exception $e) {
         $this->getLogger(__METHOD__)->error('catch error', $basket);
             return false;

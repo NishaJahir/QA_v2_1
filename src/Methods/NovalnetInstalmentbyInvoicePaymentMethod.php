@@ -84,11 +84,10 @@ class NovalnetInstalmentbyInvoicePaymentMethod extends PaymentMethodBaseService
             if (!empty($minimumAmount) && is_numeric($minimumAmount) && $minimumAmount < 1998) {
                 $instalmentPaymentMimimumAmount = false;
             }
-            $paymentConditionValidation = true;
-            if (!empty($minimumAmount)) {
+          
             $paymentConditionValidation = $this->paymentService->checkPaymentDisplayConditions($this->basket, 'novalnet_instalment_invoice');
-            }
-            $this->getLogger(__METHOD__)->error('called instalment', $paymentConditionValidation);
+            
+            $this->getLogger(__METHOD__)->error('updated instalment', $paymentConditionValidation);
             return (bool)($this->paymentService->isPaymentActive($this->basket, 'novalnet_instalment_invoice') && $instalmentPaymentMimimumAmount && $paymentConditionValidation);
         }
         return false;

@@ -1152,22 +1152,6 @@
                   "defaultValue":"images/novalnet_przelewy.png"
                }
             },
-            "novalnet_przelewy_payment_pending_status":{  
-               "type":"inputText",
-               "required":false,
-               "label":"Config.paymentPendingStatusLabel",
-               "options":{  
-                  "defaultValue":"3"
-               }
-            },
-            "novalnet_przelewy_order_completion_status":{  
-               "type":"inputText",
-               "required":false,
-               "label":"Config.orderCompletionStatusLabel",
-               "options":{  
-                  "defaultValue":"7.1"
-               }
-            },
             "novalnet_przelewy_minimum_order_amount":{  
                "type":"inputText",
                "required":false,

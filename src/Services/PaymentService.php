@@ -686,14 +686,16 @@ class PaymentService
     public function validatePaymentResponse() {
         try {
             $nnPaymentData = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
+            $paymentKey = $this->sessionStorage->getPlugin()->getValue('paymentKey');
             $this->sessionStorage->getPlugin()->setValue('nnPaymentData', null);
-
+$this->getLogger(__METHOD__)->error('validate payment key',  $paymentKey);
             $nnPaymentData['mop']            = $this->sessionStorage->getPlugin()->getValue('mop');
+            $this->getLogger(__METHOD__)->error('validate mop',   $nnPaymentData['mop'] );
             $this->getLogger(__METHOD__)->error('validate response',  $nnPaymentData);
             $nnPaymentData['payment_method'] = (!empty($nnPaymentData['mop'])) ? strtolower($this->paymentHelper->getPaymentKeyByMop($nnPaymentData['mop'])) : $nnPaymentData['payment_key'];
-            if ($nnPaymentData['transaction']['payment_type'] == 'PAYPAL') {
-             $nnPaymentData['payment_method'] = 'novalnet_paypal';
-            }
+           // if ($nnPaymentData['transaction']['payment_type'] == 'PAYPAL') {
+            // $nnPaymentData['payment_method'] = 'novalnet_paypal';
+            //}
             $additionalInfo = $this->additionalInfo($nnPaymentData);
         
             if($nnPaymentData['payment_method'] == 'INSTALMENT_INVOICE') {

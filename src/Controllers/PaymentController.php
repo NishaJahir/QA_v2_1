@@ -129,7 +129,7 @@ class PaymentController extends Controller
             $this->paymentService->pushNotification($responseData['status_text'], 'error', 100);    
         }
         $paymentRequestParameters = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
-        $paymentRequestParameters['payment_key'] = 'novalnet_paypal';
+        //$paymentRequestParameters['payment_key'] = 'novalnet_paypal';
         $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($paymentRequestParameters, $responseData));
         $this->paymentService->validatePaymentResponse();
         return $this->response->redirectTo('confirmation');
